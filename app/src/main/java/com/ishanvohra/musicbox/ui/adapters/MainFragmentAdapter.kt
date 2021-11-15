@@ -8,7 +8,8 @@ import com.ishanvohra.musicbox.ui.fragments.PlayerFragment
 
 class MainFragmentAdapter(
     fragment: FragmentActivity,
-    val dataSet: ArrayList<GetPlaylistResponse.Short>
+    val dataSet: ArrayList<GetPlaylistResponse.Short>,
+    val listener: PlayerFragment.MusicPlayerEventListener
 ): FragmentStateAdapter(fragment) {
 
     override fun getItemCount(): Int {
@@ -16,7 +17,7 @@ class MainFragmentAdapter(
     }
 
     override fun createFragment(position: Int): Fragment {
-        return PlayerFragment.newInstance(song = dataSet[position])
+        return PlayerFragment.newInstance(song = dataSet[position], listener)
     }
 
 

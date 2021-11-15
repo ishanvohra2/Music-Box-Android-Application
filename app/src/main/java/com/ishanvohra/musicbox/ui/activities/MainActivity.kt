@@ -6,8 +6,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
 import com.ishanvohra.musicbox.R
 import com.ishanvohra.musicbox.ui.adapters.MainFragmentAdapter
+import com.ishanvohra.musicbox.ui.fragments.PlayerFragment
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity()
+,PlayerFragment.MusicPlayerEventListener{
 
     private var viewModel = MainViewModel()
 
@@ -27,7 +29,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setUpViewPager() {
-        adapter = MainFragmentAdapter(this, ArrayList())
+        adapter = MainFragmentAdapter(this, ArrayList(), this)
         viewPager?.adapter = adapter
         viewPager?.orientation = ViewPager2.ORIENTATION_VERTICAL
 
@@ -45,5 +47,17 @@ class MainActivity : AppCompatActivity() {
 
     private fun loadMusicList() {
         viewModel.getPlaylist("b9f74279-038b-4590-9f96-7c720261294c")
+    }
+
+    override fun moveToNextSong() {
+        if(viewPager?.currentItem!! < adapter?.dataSet!!.size - 1){
+            viewPager?.currentItem = viewPager?.currentItem?.plus(1)!!
+        }
+    }
+
+    override fun moveToPreviousSong() {
+        if(viewPager?.currentItem!! > 0){
+            viewPager?.currentItem = viewPager?.currentItem?.minus(1)!!
+        }
     }
 }

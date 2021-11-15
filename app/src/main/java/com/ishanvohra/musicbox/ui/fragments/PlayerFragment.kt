@@ -4,16 +4,12 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.view.ContextMenu
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.audio.AudioAttributes
-import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.ishanvohra.musicbox.R
@@ -28,7 +24,7 @@ class PlayerFragment : Fragment(R.layout.item_player) {
     private var replay10Btn: ImageView? = null
     private var forward10Btn: ImageView? = null
     private var skipBackBtn: ImageView? = null
-    private var forwardBackBtn: ImageView? = null
+    private var skipForwardBtn: ImageView? = null
     private var progressIndicator: LinearProgressIndicator? = null
 
     private var songItem: GetPlaylistResponse.Short? = null
@@ -36,6 +32,7 @@ class PlayerFragment : Fragment(R.layout.item_player) {
     private var handler: Handler? = null
     private var runnable: Runnable? = null
     private var isPlaying: Boolean = true
+    private var listener: MusicPlayerEventListener? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -58,6 +55,14 @@ class PlayerFragment : Fragment(R.layout.item_player) {
                 playPauseBtn?.setImageResource(R.drawable.ic_baseline_pause_circle_outline_24)
                 simplePlayer?.play()
             }
+        }
+
+        skipForwardBtn?.setOnClickListener {
+            listener?.moveToNextSong()
+        }
+
+        skipBackBtn?.setOnClickListener {
+            listener?.moveToPreviousSong()
         }
     }
 
@@ -107,6 +112,9 @@ class PlayerFragment : Fragment(R.layout.item_player) {
         simplePlayer?.addListener(object : Player.Listener{
             override fun onPlaybackStateChanged(playbackState: Int) {
                 super.onPlaybackStateChanged(playbackState)
+                if(playbackState == Player.STATE_ENDED){
+                    listener?.moveToNextSong()
+                }
             }
         })
     }
@@ -119,15 +127,16 @@ class PlayerFragment : Fragment(R.layout.item_player) {
         replay10Btn = view.findViewById(R.id.replay_10_btn)
         forward10Btn = view.findViewById(R.id.forward_10_btn)
         skipBackBtn = view.findViewById(R.id.go_back_btn)
-        forwardBackBtn = view.findViewById(R.id.go_forward_btn)
+        skipForwardBtn = view.findViewById(R.id.go_forward_btn)
         progressIndicator = view.findViewById(R.id.progress_indicator)
     }
 
     companion object{
-        fun newInstance(song: GetPlaylistResponse.Short) = PlayerFragment()
+        fun newInstance(song: GetPlaylistResponse.Short, eventListener: MusicPlayerEventListener) = PlayerFragment()
             .apply {
                 arguments = Bundle().apply {
                     putSerializable("song", song)
+                    listener = eventListener
                 }
             }
     }
@@ -139,6 +148,7 @@ class PlayerFragment : Fragment(R.layout.item_player) {
 
     override fun onResume() {
         super.onResume()
+        simplePlayer?.seekTo(0)
         simplePlayer?.play()
     }
 
@@ -147,5 +157,10 @@ class PlayerFragment : Fragment(R.layout.item_player) {
         simplePlayer?.stop()
         simplePlayer?.release()
         handler?.removeCallbacks(runnable!!)
+    }
+
+    interface MusicPlayerEventListener{
+        fun moveToNextSong()
+        fun moveToPreviousSong()
     }
 }
