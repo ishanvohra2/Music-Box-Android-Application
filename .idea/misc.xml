@@ -3,8 +3,9 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="app/src/main/res/drawable/player_control_background.xml" value="0.19166666666666668" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.16111111111111112" />
-        <entry key="app/src/main/res/layout/item_player.xml" value="0.20446735395189003" />
+        <entry key="app/src/main/res/layout/item_player.xml" value="0.16111111111111112" />
       </map>
     </option>
   </component>
