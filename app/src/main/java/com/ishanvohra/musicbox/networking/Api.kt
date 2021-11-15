@@ -8,6 +8,6 @@ import retrofit2.http.Url
 interface Api {
 
     @GET
-    fun getPlayList(@Url url: String) : Response<GetPlaylistResponse>
+    suspend fun getPlayList(@Url url: String) : Response<GetPlaylistResponse>
 
 }
