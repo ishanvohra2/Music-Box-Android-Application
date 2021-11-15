@@ -2,8 +2,10 @@ package com.ishanvohra.musicbox.ui.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
+import com.airbnb.lottie.LottieAnimationView
 import com.ishanvohra.musicbox.R
 import com.ishanvohra.musicbox.ui.adapters.MainFragmentAdapter
 import com.ishanvohra.musicbox.ui.fragments.PlayerFragment
@@ -14,6 +16,7 @@ class MainActivity : AppCompatActivity()
     private var viewModel = MainViewModel()
 
     private var viewPager: ViewPager2? = null
+    private var animationView: LottieAnimationView? = null
 
     private var adapter: MainFragmentAdapter? = null
 
@@ -35,6 +38,9 @@ class MainActivity : AppCompatActivity()
 
         viewModel.seriesList.observe(this, {
             if (it != null){
+                animationView?.visibility = View.GONE
+                viewPager?.visibility = View.VISIBLE
+
                 adapter?.dataSet?.addAll(it.shorts)
                 adapter?.notifyDataSetChanged()
             }
@@ -43,6 +49,7 @@ class MainActivity : AppCompatActivity()
 
     private fun bindViews() {
         viewPager = findViewById(R.id.view_pager)
+        animationView = findViewById(R.id.animationView)
     }
 
     private fun loadMusicList() {
