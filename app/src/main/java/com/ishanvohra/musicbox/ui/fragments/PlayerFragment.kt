@@ -8,12 +8,14 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.ishanvohra.musicbox.R
 import com.ishanvohra.musicbox.models.GetPlaylistResponse
+import com.ishanvohra.musicbox.util.ImageUrls
 
 class PlayerFragment : Fragment(R.layout.item_player) {
 
@@ -63,6 +65,41 @@ class PlayerFragment : Fragment(R.layout.item_player) {
 
         skipBackBtn?.setOnClickListener {
             listener?.moveToPreviousSong()
+        }
+
+        replay10Btn?.setOnClickListener {
+            try{
+                if (simplePlayer?.currentPosition!!.div(1000) > 10) {
+                    simplePlayer?.seekTo(simplePlayer?.currentPosition?.minus(10000)!!)
+                } else {
+                    simplePlayer?.seekTo(0)
+                }
+            }
+            catch (e:Exception){
+                e.printStackTrace()
+            }
+
+        }
+
+        forward10Btn?.setOnClickListener {
+            try{
+                if (simplePlayer?.currentPosition!! < simplePlayer?.duration!!.minus(10000)) {
+                    simplePlayer?.seekTo(simplePlayer?.currentPosition?.plus(10000)!!)
+                }
+            }
+            catch (e: Exception){
+                e.printStackTrace()
+            }
+        }
+
+        try{
+            Glide
+                .with(requireContext())
+                .load(ImageUrls.getRandomImage())
+                .into(thumbnailImageView!!)
+        }
+        catch (e: Exception){
+            e.printStackTrace()
         }
     }
 
