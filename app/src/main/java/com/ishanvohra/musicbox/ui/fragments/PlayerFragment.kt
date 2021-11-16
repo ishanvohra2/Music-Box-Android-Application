@@ -19,6 +19,7 @@ import com.ishanvohra.musicbox.util.ImageUrls
 
 class PlayerFragment : Fragment(R.layout.item_player) {
 
+    //declaring all the view elements
     private var titleTextView: TextView? = null
     private var playerView: StyledPlayerView? = null
     private var thumbnailImageView: ImageView? = null
@@ -39,13 +40,17 @@ class PlayerFragment : Fragment(R.layout.item_player) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        //getting the song item via arguments sent in bundle
         songItem = arguments?.getSerializable("song") as GetPlaylistResponse.Short
 
         bindViews(view)
         setUpPlayer()
 
+        //setting the text of titleTextView
         titleTextView?.text = songItem?.title
 
+        //implementing pause/play on button click
+        //if the song is being played, it will be paused and the drawable on the image view will be updated and vice versa
         playPauseBtn?.setOnClickListener {
             if(isPlaying){
                 isPlaying = false
@@ -67,6 +72,7 @@ class PlayerFragment : Fragment(R.layout.item_player) {
             listener?.moveToPreviousSong()
         }
 
+        //Setting the current position of player to 10 seconds back
         replay10Btn?.setOnClickListener {
             try{
                 if (simplePlayer?.currentPosition!!.div(1000) > 10) {
@@ -81,6 +87,7 @@ class PlayerFragment : Fragment(R.layout.item_player) {
 
         }
 
+        //Setting the current position of player to 10 seconds ahead
         forward10Btn?.setOnClickListener {
             try{
                 if (simplePlayer?.currentPosition!! < simplePlayer?.duration!!.minus(10000)) {
@@ -92,6 +99,7 @@ class PlayerFragment : Fragment(R.layout.item_player) {
             }
         }
 
+        //adding a random image as thumbnail from ImageUrls class.
         try{
             Glide
                 .with(requireContext())
@@ -103,11 +111,14 @@ class PlayerFragment : Fragment(R.layout.item_player) {
         }
     }
 
+    //setting up the exoplayer
     private fun setUpPlayer() {
         try{
+            //building the exoplayer instance
             simplePlayer = ExoPlayer.Builder(requireContext())
                 .build()
 
+            //setting up audio attributes
             val audioAttributes = AudioAttributes.Builder()
                 .setUsage(C.USAGE_MEDIA)
                 .setContentType(C.CONTENT_TYPE_MOVIE)
@@ -118,12 +129,17 @@ class PlayerFragment : Fragment(R.layout.item_player) {
             playerView?.setShowPreviousButton(false)
             simplePlayer?.setAudioAttributes(audioAttributes, true)
 
+            //adding media item to exo player using the url
             val mediaItem: MediaItem = MediaItem.fromUri(songItem?.audioPath!!)
             simplePlayer!!.setMediaItem(mediaItem, true)
             simplePlayer!!.prepare()
+
+            //setting repeat mode off that is song will be played only once and will not be repeated
             simplePlayer!!.repeatMode = Player.REPEAT_MODE_OFF
             simplePlayer!!.playWhenReady = true
 
+            //running a task on a different thread which will keep a track of position of the player and
+            //update it on the linear progress indicator
             handler = Handler(Looper.getMainLooper())
             runnable = object : Runnable{
                 override fun run() {
@@ -145,6 +161,7 @@ class PlayerFragment : Fragment(R.layout.item_player) {
         }
     }
 
+    //if the playback state is STATE_ENDED that is if the song is ended. move to the next song.
     private fun setUpPlayerListener() {
         simplePlayer?.addListener(object : Player.Listener{
             override fun onPlaybackStateChanged(playbackState: Int) {
@@ -156,6 +173,7 @@ class PlayerFragment : Fragment(R.layout.item_player) {
         })
     }
 
+    //binding all the view elements
     private fun bindViews(view: View) {
         titleTextView = view.findViewById(R.id.song_title_tv)
         playerView = view.findViewById(R.id.player_view)
@@ -168,6 +186,7 @@ class PlayerFragment : Fragment(R.layout.item_player) {
         progressIndicator = view.findViewById(R.id.progress_indicator)
     }
 
+    //creating an instance of Player Fragment
     companion object{
         fun newInstance(song: GetPlaylistResponse.Short, eventListener: MusicPlayerEventListener) = PlayerFragment()
             .apply {
@@ -178,17 +197,20 @@ class PlayerFragment : Fragment(R.layout.item_player) {
             }
     }
 
+    //pausing the player when the fragment is paused
     override fun onPause() {
         super.onPause()
         simplePlayer?.pause()
     }
 
+    //playing the song from the beginning when the fragment is resumed
     override fun onResume() {
         super.onResume()
         simplePlayer?.seekTo(0)
         simplePlayer?.play()
     }
 
+    //when the fragment is stopped, the memory from the player instance is released and the background tasks are closed
     override fun onStop() {
         super.onStop()
         simplePlayer?.stop()

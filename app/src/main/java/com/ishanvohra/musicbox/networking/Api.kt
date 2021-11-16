@@ -7,6 +7,7 @@ import retrofit2.http.Url
 
 interface Api {
 
+    //Get song list
     @GET
     suspend fun getPlayList(@Url url: String) : Response<GetPlaylistResponse>
 

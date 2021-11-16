@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit
 
 class RetrofitClient(private val BASE_URL: String) {
 
+    //creating a retrofit instance which will be used in the repository class to make API Calls
     val instance: Api by lazy {
 
         val okHttpClient: OkHttpClient = OkHttpClient.Builder()
